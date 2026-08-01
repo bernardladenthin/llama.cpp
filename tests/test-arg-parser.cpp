@@ -112,6 +112,15 @@ static void test(void) {
     assert(true == common_params_parse(argv.size(), list_str_to_char(argv).data(), params, LLAMA_EXAMPLE_COMMON));
     assert(params.model.path == "model_file.gguf");
 
+    // Regression for llama.cpp #24779 (embedded/JNI callers): common_params_parse must parse
+    // exactly the argv it is given and must never substitute the process command line. A host
+    // application builds its own argv (whose length may coincide with the process command
+    // line's), so the parser must honor it. The Windows recovery lives in
+    // common_params_parse_main(), which only the standalone tools opt into.
+    argv = {"embedded_host", "-m", "embedded_model.gguf"};
+    assert(true == common_params_parse(argv.size(), list_str_to_char(argv).data(), params, LLAMA_EXAMPLE_COMMON));
+    assert(params.model.path == "embedded_model.gguf");
+
     argv = {"binary_name", "-t", "1234"};
     assert(true == common_params_parse(argv.size(), list_str_to_char(argv).data(), params, LLAMA_EXAMPLE_COMMON));
     assert(params.cpuparams.n_threads == 1234);

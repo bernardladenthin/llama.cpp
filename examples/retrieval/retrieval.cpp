@@ -119,7 +119,7 @@ int main(int argc, char ** argv) {
 
     common_init();
 
-    if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_RETRIEVAL, print_usage)) {
+    if (!common_params_parse_main(argc, argv, params, LLAMA_EXAMPLE_RETRIEVAL, print_usage)) {
         return 1;
     }
 

@@ -1201,14 +1201,10 @@ static utf8_argv make_utf8_argv() {
 #endif
 
 bool common_params_parse(int argc, char ** argv, common_params & params, llama_example ex, void(*print_usage)(int, char **)) {
-#ifdef _WIN32
-    auto utf8 = make_utf8_argv();
-    // repair argv only when it matches the process command line
-    if (static_cast<int>(utf8.buf.size()) == argc) {
-        argv = utf8.ptrs.data();
-    }
-#endif
-
+    // Parse exactly the argv we are given. The Windows process-command-line UTF-8 recovery
+    // (llama.cpp #24779) lives in common_params_parse_main() below, which the standalone
+    // tools' main() opt into. An embedded caller passes its own argv (not the process command
+    // line), so it must never be silently overridden here.
     auto ctx_arg = common_params_parser_init(params, ex, print_usage);
     const common_params params_org = ctx_arg.params; // the example can modify the default params
 
@@ -1240,6 +1236,21 @@ bool common_params_parse(int argc, char ** argv, common_params & params, llama_e
     }
 
     return true;
+}
+
+// Entry point for the standalone tools' main(). On Windows the process may receive an
+// ANSI/mojibake argv, so recover the correct UTF-8 argv from the process command line
+// (GetCommandLineW) before parsing -- the llama.cpp #24779 fix. Embedded callers that build
+// their own argv must call common_params_parse() directly instead, so their argv is kept.
+bool common_params_parse_main(int argc, char ** argv, common_params & params, llama_example ex, void(*print_usage)(int, char **)) {
+#ifdef _WIN32
+    // `utf8` must outlive the parse call below -- its ptrs point into its buf.
+    auto utf8 = make_utf8_argv();
+    if (static_cast<int>(utf8.buf.size()) == argc) {
+        return common_params_parse(static_cast<int>(utf8.buf.size()), utf8.ptrs.data(), params, ex, print_usage);
+    }
+#endif
+    return common_params_parse(argc, argv, params, ex, print_usage);
 }
 
 static std::string list_builtin_chat_templates() {

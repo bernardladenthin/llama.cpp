@@ -37,7 +37,7 @@ int llama_cli(int argc, char ** argv) {
 
     common_init();
 
-    if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_CLI)) {
+    if (!common_params_parse_main(argc, argv, params, LLAMA_EXAMPLE_CLI)) {
         return 1;
     }
 

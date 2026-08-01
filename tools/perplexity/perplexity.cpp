@@ -2018,7 +2018,7 @@ int llama_perplexity(int argc, char ** argv) {
 
     common_init();
 
-    if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_PERPLEXITY)) {
+    if (!common_params_parse_main(argc, argv, params, LLAMA_EXAMPLE_PERPLEXITY)) {
         return 1;
     }
 

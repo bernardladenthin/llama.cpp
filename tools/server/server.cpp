@@ -102,7 +102,7 @@ int llama_server(int argc, char ** argv) {
     // touch it. lifecycle is symmetric, stop_gc() runs in clean_up() before backend free
     server_stream_session_manager_start();
 
-    if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_SERVER)) {
+    if (!common_params_parse_main(argc, argv, params, LLAMA_EXAMPLE_SERVER)) {
         return 1;
     }
 

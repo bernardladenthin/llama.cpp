@@ -123,6 +123,11 @@ struct common_params_context {
 // if one argument has invalid value, it will automatically display usage of the specific argument (and not the full usage message)
 bool common_params_parse(int argc, char ** argv, common_params & params, llama_example ex, void(*print_usage)(int, char **) = nullptr);
 
+// Like common_params_parse(), but first recovers the process command line as UTF-8 argv on
+// Windows (the llama.cpp #24779 fix). Standalone tools' main() should call THIS; embedded
+// callers that supply their own argv must call common_params_parse() directly.
+bool common_params_parse_main(int argc, char ** argv, common_params & params, llama_example ex, void(*print_usage)(int, char **) = nullptr);
+
 // load all backends and print the list of available (non-CPU) devices to stdout
 void common_print_available_devices();
 

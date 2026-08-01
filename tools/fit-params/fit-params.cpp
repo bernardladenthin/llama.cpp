@@ -20,7 +20,7 @@ int llama_fit_params(int argc, char ** argv) {
 
     common_init();
 
-    if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_FIT_PARAMS)) {
+    if (!common_params_parse_main(argc, argv, params, LLAMA_EXAMPLE_FIT_PARAMS)) {
         return 1;
     }
 

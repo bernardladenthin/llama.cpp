@@ -25,7 +25,7 @@ int llama_batched_bench(int argc, char ** argv) {
 
     common_init();
 
-    if (!common_params_parse(argc, argv, params, LLAMA_EXAMPLE_BENCH, print_usage)) {
+    if (!common_params_parse_main(argc, argv, params, LLAMA_EXAMPLE_BENCH, print_usage)) {
         return 1;
     }
 

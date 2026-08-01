@@ -1180,8 +1180,16 @@ private:
 
         // attach a progress callback
         {
-            params_base.load_progress_callback = load_progress_callback;
-            params_base.load_progress_callback_user_data = &load_progress_text;
+            // java-llama.cpp patch: upstream (b9789) unconditionally installs the server's own
+            // load-progress reporter here, which clobbered an embedding/JNI caller's
+            // load_progress_callback (libjllama's LoadProgressCallback trampoline, set on the
+            // common_params before server_context::load_model). Only install the server's
+            // reporter when the caller has not supplied one, so a caller-provided callback
+            // survives and fires during model load.
+            if (params_base.load_progress_callback == nullptr) {
+                params_base.load_progress_callback = load_progress_callback;
+                params_base.load_progress_callback_user_data = &load_progress_text;
+            }
         }
 
         llama_init = common_init_from_params(params_base);
